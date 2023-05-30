@@ -78,11 +78,11 @@ public ProdutoController(ProdutoService service){
       model.addAttribute("array",carrinho.size());
         return "redirect:/index";
     }
-@GetMapping("/visualizarCarrinho")
-       public String VerCarrinho(Model model){
-
-       return "PagVisualizarCarrinho";
-       }
+//@GetMapping("/visualizarCarrinho")
+//       public String VerCarrinho(Model model){
+//
+//       return "PagVisualizarCarrinho";
+//       }
 //    public String Excluir(@PathVariable(name = "id") String id){
 //        Optional<Produto> produt = service.buscar(id);
 //        if (produt.isPresent()) {
