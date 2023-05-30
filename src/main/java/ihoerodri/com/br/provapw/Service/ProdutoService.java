@@ -29,6 +29,10 @@ public class ProdutoService {
         return repositoryProd.findById(id);
 
     }
+    public Produto BuscarID(Long id){
+        return this.repositoryProd.getById(id);
+    }
+
 
     public void deletar(Long id){
         SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
