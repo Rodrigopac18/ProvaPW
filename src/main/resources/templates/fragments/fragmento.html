@@ -23,7 +23,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link active" aria-current="page" href="/index">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{'Cadastrar'}">CadastrarProdutos</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{'cadastrarProdutos'}">CadastrarProdutos</a></li>
 
                 </ul>
 
@@ -44,11 +44,11 @@
 
 
                 </ul>
-                <form class="d-flex">
+                <form class="d-flex" >
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill" th:object="${array}">0</span>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill"   th:text="${tam}"></span>
                     </button>
                 </form>
             </div>
@@ -74,8 +74,8 @@
                 <div class="col mb-5" th:each="Lista: ${produtoLista}" >
                     <div class="card h-100" >
                         <!-- Product image-->
-                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                        <!-- Product details-->
+                        <img class="card-img-top" th:src="@{'/images/'+${Lista.imageuri}}" alt="..." />
+                          <!-- Product details-->
 
                         <div class="card-body p-4" >
                             <div class="text-center">
@@ -90,7 +90,7 @@
                                 <p th:text="${Lista.categoria}"></p>
                                 <p th:text="${Lista.concentracao}"></p>
                                 <a th:href="@{'deletar/'+ ${Lista.id}}">Deletar</a>
-                                <a th:href="@{'editarPag/'+ ${Lista.id}}">Editar</a>
+                                <a th:href="@{'editar/'+ ${Lista.id}}">Editar</a>
 
                             </div>
                         </div>
@@ -101,7 +101,38 @@
         </div>
     </section>
 </section>
+<section th:fragment="carrinho">
+    <section class="py-5" >
 
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-left">
+                <div class="col mb-5" th:each="Lista: ${listCar}" >
+                    <div class="card h-100" >
+
+
+                        <div class="card-body p-4" >
+                            <div class="text-center">
+                                <!-- Product name-->
+
+
+                                <h5 class="fw-bolder" th:text="${Lista.nome}"></h5>
+
+                                <!-- Product price  th:href="@{'deletar/'+ ${Lista.id}}"-->
+
+                                <div class="alinhar"><p>$</p><p th:text="${Lista.preco}"></p></div>
+                                <p th:text="${Lista.categoria}"></p>
+                                <p th:text="${Lista.concentracao}"></p>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</section>
 <section th:fragment="section22">
     <section class="py-5" >
 
@@ -126,7 +157,7 @@
                                 <p th:text="${Lista.categoria}"></p>
                                 <p th:text="${Lista.concentracao}"></p>
                                 <a th:href="@{'adicionarCarrinho/'+ ${Lista.id}}">Adicionar ao Carrinho</a>
-                                <a th:href="@{'verCarrinho/'}">Ver o carrinho</a>
+                                <a th:href="@{'verCarrinho'}">Ver o carrinho</a>
 
                             </div>
                         </div>

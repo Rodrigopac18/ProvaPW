@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 
     <div th:replace="/fragments/fragmento :: head"></div>
@@ -8,6 +9,7 @@
     <title>Carrinho</title>
 </head>
 <body>
-
+<h1>Listagem</h1>
+<div th:replace="~{/fragments/fragmento :: carrinho}"></div>
 </body>
 </html>

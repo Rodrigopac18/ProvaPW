@@ -1,6 +1,8 @@
 package ihoerodri.com.br.provapw.Controller;
 
+import ihoerodri.com.br.provapw.Service.FileStorageService;
 import ihoerodri.com.br.provapw.Service.ProdutoService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -11,71 +13,106 @@ import ihoerodri.com.br.provapw.model.Produto;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
 public class ProdutoController {
+
+    FileStorageService fileStorageService;
+    ProdutoService service;
+    private List<Produto> carrinho = new ArrayList<>();
+
     @Autowired
-  private ProdutoService service;
-public ProdutoController(ProdutoService service){
+    public ProdutoController(FileStorageService fileStorageService, ProdutoService service) {
+        this.fileStorageService = fileStorageService;
+        this.service = service;
+    }
 
-    this.service=service;
-}
+    @GetMapping({"/", "/index"})
+    public String PagHome(Model model, HttpServletResponse response) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss:SSS");
+        Date date = new Date();
+        Cookie cookie = new Cookie("visita", dateFormat.format(date));
+        cookie.setMaxAge(60 * 60 * 24); // 24horas
+        response.addCookie(cookie);
+        List<Produto> produtoList = service.findAll();
+        int tamanho= service.SizeCarrinho(carrinho);
+        model.addAttribute("produtoLista", produtoList);
+        model.addAttribute("tam", tamanho);
+
+        return "UserHome";
+    }
 
 
-    @GetMapping("/Admin")
-    public String Home(Model model){
-    List<Produto>produtoList= service.findAll();
-    model.addAttribute("produtoLista", produtoList);
+    @GetMapping("/admin")
+    public String HomeAdmin(Model model) {
+        List<Produto> produtoList = service.findAll();
+        model.addAttribute("produtoLista", produtoList);
         return "PagHome";
     }
-    @GetMapping("/Cadastrar")
-    public String CadastrarProdutos(Model model){
+
+    @GetMapping("/cadastrarProdutos")
+    public String CadastrarProdutos(Model model) {
         Produto p = new Produto();
         model.addAttribute("prod", p);
-     return "PagCadastrarProdutos";
+        return "PagCadastrarProdutos";
     }
 
-@PostMapping("/salvarProduto")
-    public String Salvar(@ModelAttribute @Valid Produto p, Errors errors){
+    @PostMapping("/salvarProduto")
+    // @RequestParam(name = "file") MultipartFile file
+    public String Salvar(@ModelAttribute @Valid Produto p, RedirectAttributes redirectAttributes, Errors erro) {
+        if(erro.hasErrors()){
+            return "PagCadastrarProdutos";
 
-        service.salvar(p);
-        return "redirect:/index";
+        }else{
 
-}
+
+            this.service.salvar(p);
+            redirectAttributes.addAttribute("msg", "Cadastro realizado com sucesso");
+            return "redirect:/admin";
+        }
+
+
+    }
 
     @RequestMapping(value = "/deletar/{id}", method = RequestMethod.GET)
-    public String Excluir(@PathVariable(name = "id") Long id){
+    public String Excluir(@PathVariable(name = "id") Long id) {
         service.deletar(id);
 
-        return "redirect:/index";
+        return "redirect:/admin";
     }
-    @GetMapping("/editarPag/{id}")
-    public String Editar(@PathVariable(name = "id") Long id, Model model){
-       Optional<Produto> atualiza= service.buscar(id);
-        if(atualiza.isPresent()){
+
+    @GetMapping("/editar/{id}")
+    public String Editar(@PathVariable(name = "id") Long id, Model model) {
+        Optional<Produto> atualiza = service.buscar(id);
+        if (atualiza.isPresent()) {
             model.addAttribute("atual", atualiza.get());
-            return"PagEditar";
+            return "PagEditar";
         }
 
-        return "redirect:/index";
+        return "redirect:/admin";
     }
+
     @GetMapping("/adicionarCarrinho/{id}")
-    public String AddCarrinho(Model model,@PathVariable(name = "id") Long id, HttpServletRequest request){
-   service.buscar(id);
+    public String AddCarrinho(Model model, @PathVariable(name = "id") Long id, HttpServletRequest request) {
+        service.buscar(id);
         HttpSession session = request.getSession();
 
-        if(session.getAttribute("carrinho")==null){
+        if (session.getAttribute("carrinho") == null) {
             session.setAttribute("carrinho", new ArrayList<Produto>());
         }
-        ArrayList<Produto> carrinho = (ArrayList<Produto>) session.getAttribute("carrinho");
+         carrinho = (ArrayList<Produto>) session.getAttribute("carrinho");
 
         carrinho.add(service.BuscarID(id));
 
-      model.addAttribute("array",carrinho.size());
+        model.addAttribute("array", carrinho.size());
         return "redirect:/index";
     }
 //@GetMapping("/visualizarCarrinho")
@@ -83,6 +120,21 @@ public ProdutoController(ProdutoService service){
 //
 //       return "PagVisualizarCarrinho";
 //       }
+    @RequestMapping("/verCarrinho")
+    public String getCarrinho(Model model, HttpServletRequest request){
+        System.out.println(service.findAll());
+        HttpSession session = request.getSession();
+        if(session.getAttribute("carrinho")!=null){
+            carrinho = (ArrayList<Produto>) session.getAttribute("carrinho");
+            model.addAttribute("listCar",carrinho);
+            System.out.println(carrinho);
+            return "PagVisualizarCarrinho";
+
+        }
+
+        return "redirect:/?message=Não existe produtos no carrinho";
+
+    }
 //    public String Excluir(@PathVariable(name = "id") String id){
 //        Optional<Produto> produt = service.buscar(id);
 //        if (produt.isPresent()) {

@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class Controlador {
-    private ProdutoService re;
-    @GetMapping("/")
-public String LoginMet(){
 
-    return "PagLogin";
-}
+
+    @GetMapping("/pagLogin")
+    public String LoginMet() {
+
+        return "pagLogin";
+    }
 }

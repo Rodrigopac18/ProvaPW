@@ -42,7 +42,12 @@ public class ProdutoService {
         repositoryProd.save(produto);
 
     }
-
+    public int SizeCarrinho(List<Produto> lista){
+        return lista.size();
+    }
+    public Produto editar(Produto f){
+        return repositoryProd.saveAndFlush(f);
+    }
     public List<Produto>findAll(){
 
         return repositoryProd.findAllByDeletedNull();

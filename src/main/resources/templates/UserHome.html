@@ -4,7 +4,7 @@
     <title>User</title>
     <div th:replace="/fragments/fragmento :: head"></div>
 <body>
-<div th:replace="~{/fragments/fragmento :: Navigation2}"></div>
+<div th:replace="~{/fragments/fragmento :: Navigation2}" th:with="tamanhoLista=${tam}"></div>
 <div th:replace="~{/fragments/fragmento :: header}"></div>
 
 
